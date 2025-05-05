@@ -11,13 +11,13 @@ def make_polygon(radius:float, n_sides:int, centroid:list):
     nver = len(xver)
     return xver, yver, nver
 
-def make_polygon_from_edge_length(radius: float, edge_length: float, centroid: list):
+def make_polygon_from_edge_length(radius: float, edge_length: float):
     angle = np.arcsin(edge_length / (2 * radius))
     n_sides = int(np.round(np.pi / angle))
 
     theta = np.linspace(0, 2 * np.pi, n_sides, endpoint=False)  # exclude endpoint to avoid overlap
-    xver = radius * np.cos(theta) + centroid[0]
-    yver = radius * np.sin(theta) + centroid[1]
+    xver = radius * np.cos(theta)
+    yver = radius * np.sin(theta)
 
     vertices = np.column_stack((xver, yver))  # shape: (n_sides, 2)
     return vertices
@@ -41,35 +41,40 @@ def make_container(length: float, width: float, thickness: float):
     return np.column_stack((wall_xver, wall_yver))  # shape: (n_sides, 2)
 
 def make_container_separate(length: float, width: float, thickness: float):
+    # Bottom wall
     bottom = Wall([
-        [0, 0],
-        [length + 2*thickness, 0],
-        [length + 2*thickness, thickness],
-        [0, thickness]
+        [-thickness, -thickness],
+        [length + thickness, -thickness],
+        [length + thickness, 0],
+        [-thickness, 0]
     ])
 
+    # Top wall
     top = Wall([
-        [0, width + thickness],
-        [length + 2*thickness, width + thickness],
-        [length + 2*thickness, width + 2*thickness],
-        [0, width + 2*thickness]
+        [-thickness, width],
+        [length + thickness, width],
+        [length + thickness, width + thickness],
+        [-thickness, width + thickness]
     ])
 
+    # Left wall
     left = Wall([
-        [0, thickness],
-        [thickness, thickness],
-        [thickness, width + thickness],
-        [0, width + thickness]
+        [-thickness, 0],
+        [0, 0],
+        [0, width],
+        [-thickness, width]
     ])
 
+    # Right wall
     right = Wall([
-        [length + thickness, thickness],
-        [length + 2*thickness, thickness],
-        [length + 2*thickness, width + thickness],
-        [length + thickness, width + thickness]
+        [length, 0],
+        [length + thickness, 0],
+        [length + thickness, width],
+        [length, width]
     ])
 
     return [bottom, top, left, right]
+
 
 def generate_grid(length:float, width:float, radius:float):
     # generate grid
